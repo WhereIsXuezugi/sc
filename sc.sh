@@ -784,3 +784,62 @@ cron() {
 CAD() {
 	sed -i '/exec shutdown -r not "Control-Alt-Delete pressed"/#exec shutdown -r not "Control-Alt-Delete pressed"/' /etc/init/control-alt-delete.conf
 }
+		echo "
+1) update;;
+2) autoUpdate;;
+3) pFiles;;
+4) configureFirewall;;
+5) loginConf;;
+6) createUser;;
+7) chgPasswd;;
+8) users;;
+9) admin;;
+10) cron;;
+11) passPol;;
+12) lockoutPol;;
+13) hakTools;;
+14) sshd;;
+15) sys;;
+16) sudoers;;
+17) proc;;
+18) nc;;
+19) reboot;;
+20) secRoot;;
+21) cat postScript; pause;;
+22) CAD;;
+24) exit20;;
+69)runFull;;
+"
+
+
+		local choice
+		read -p "Pease select item you wish to do: " choice
+
+		case $choice in
+1) update;;
+2) autoUpdate;;
+3) pFiles;;
+4) configureFirewall;;
+5) loginConf;;
+6) createUser;;
+7) chgPasswd;;
+8) users;;
+9) admin;;
+10) cron;;
+11) passPol;;
+12) lockoutPol;;
+13) hakTools;;
+14) sshd;;
+15) sys;;
+16) sudoers;;
+17) proc;;
+18) nc;;
+19) reboot;;
+20) secRoot;;
+21) cat postScript; pause;;
+22) CAD;;
+23) exit20;;
+69)runFull;;
+*) echo "Sorry that is not an option please select another one..."
+			;;
+		esac
