@@ -5,6 +5,11 @@ UserName=$(whoami)
 LogTime=$(date '+%Y-%d %H:%M;%S')
 DE=`echo $XDG_CURRENT_DESKTOP`
 
+
+
+
+
+
 pause(){
 	read -p "Press [Enter] key to continue..." fakeEnter
 }
@@ -15,7 +20,8 @@ exit20(){
 	clear
 }
 
-apt update -y && apt upgrade -y && apt dist-upgrade -y && apt autoremove -y && killall firefox && apt purge --reinstall install firefox -y
+pt1() {
+apt update -y && apt upgrade -y && apt dist-upgrade -y && apt autoremove -y && apt install apt-utils lsof -y && killall firefox && apt purge --reinstall install firefox -y
 
 apt purge wireshark netcat-bsd netcat netcat-openbsd Ophcrack john john-bsd john-openbsd john-freebsd vuze frostwire aircrack metasploit_framework nessus snort kismet nikto yersinia burp-suite THCHydra  oclhashcat  maltego oswapzed cainandabel cain angryipscanner ipscan bettercap hydra medusa nmap zmap nginx zaproxy icmp -y && apt autoremove -y
 
@@ -31,7 +37,10 @@ ufw enable
 
 apt install unattended-upgrades -y
 systemctl enable --now unattended-upgrades
+}
 
+
+pt2() {
 users() {
 #  # Get the list of usernames from the user  
 echo "Enter the list of usernames (space-separated):"  
@@ -45,12 +54,12 @@ usernames=($usernames)
 
      # Loop through all normal users on the system  
      for user in $all_users; do  
-	     # Check if the user is not in the list of usernames  
-	     if [[ ! " ${usernames[@]} " =~ " $user " ]]; then  
-		     # Delete the user  
-		     userdel -r $user  
-		     echo "User $user deleted."  
-	     fi  
+	    # Check if the user is not in the list of usernames  
+	    if [[ ! " ${usernames[@]} " =~ " $user " ]]; then  
+		    # Delete the user  
+		    userdel -r $user  
+		    echo "User $user deleted."  
+	    fi  
      done 
 } 
 
@@ -109,7 +118,7 @@ echo "$LogTime uss: [$UserName]# Setting auto updates." >> output.log
 esac
 } 
 
-pfiles() {
+pFiles() {
 echo "$LogTime uss: [$UserName]# Deleting media files..." >> output.log
 	##Media files
 	echo "###MEDIA FILES###" >> pFiles.log
@@ -150,7 +159,7 @@ echo "$LogTime uss: [$UserName]# Media files deleted." >> output.log
 	pause
 } 
 
-loginconf() {
+loginConf() {
 
 		typeset -r TMOUT=900
 echo "$LogTime uss: [$UserName]# Creating /etc/lightdm/lightdm.conf for 12.04 compatability." >> output.log
@@ -219,7 +228,6 @@ echo "$LogTime uss: [$UserName]# Lightdm files have been configured" >> output.l
 
 		cat /usr/share/lightdm/lightdm.conf.d/50-ubuntu.conf
 		pause
-		;;
 
 }
 
@@ -265,7 +273,7 @@ echo "$LogTime uss: [$UserName]# Passwords have been changed." >> output.log
 passPol() {
 echo "$LogTime uss: [$UserName]# Setting password policy..." >> output.log
 echo "$LogTime uss: [$UserName]# Installing Craklib..." >> output.log
-	apt-get install libpam-cracklib || yum install libpam-cracklib
+	apt-get install libpam-cracklib 
 	wait
 echo "$LogTime uss: [$UserName]# Cracklib installed." >> output.log
 	sed -i.bak -e 's/PASS_MAX_DAYS\t[[:digit:]]\+/PASS_MAX_DAYS\t90/' /etc/login.defs
@@ -333,7 +341,7 @@ echo "$LogTime uss: [$UserName]# Checking for ssh..." >> output.log
                 	then
                         	apt-get autoremove -y --purge openssh-server ssh >> output.log
 echo "$LogTime uss: [$UserName]# SSH has been removed." >> output.log
-	         		else
+	        		else
 echo "$LogTime uss: [$UserName]# SSH has been found, securing now..." >> output.log
 							sed -i 's/LoginGraceTime .*/LoginGraceTime 60/g' /etc/ssh/sshd_config
                         	sed -i 's/PermitRootLogin .*/PermitRootLogin no/g' /etc/ssh/sshd_config
@@ -400,7 +408,7 @@ echo "$LogTime uss: [$UserName]# Removing hacking tools..." >> output.log
         	read -p "Do you want apache installed on the system[y/n]: "
         	if [ $a = n ];
         	then
-      	        	apt-get autoremove -y --purge apache2 >> output.log
+      	       	apt-get autoremove -y --purge apache2 >> output.log
 			else
             		if [ -e /etc/apache2/apache2.conf ]
 				then
@@ -496,7 +504,7 @@ echo "$LogTime uss: [$UserName]# Samba has been removed." >> output.log
 		sleep 1
 	fi
 ##Looks for FTP
-	dpkg -l | grep -i 'vsftpd|ftp' >> output.log
+	dpkg -l | grep -i 'ftp' >> output.log
 	if [ $? -eq 0 ]
 	then	
 		read -p "FTP Server has been installed, would you like to remove it?[y/n]: " a
@@ -810,6 +818,31 @@ CAD() {
 24) exit20;;
 69)runFull;;
 "
+runFull() {
+
+update
+autoUpdate
+pFiles
+configureFirewall
+loginConf
+eateUser
+chgPasswd
+users
+admin
+cron
+passPol
+lockoutPol
+hakTools
+sshd
+sys
+sudoers
+proc
+nc
+reboot
+secRoot
+CAD
+
+}
 
 
 		local choice
@@ -843,3 +876,17 @@ CAD() {
 *) echo "Sorry that is not an option please select another one..."
 			;;
 		esac
+	}
+
+
+
+echo pt1/2?
+read input 
+if [ "$input" -eq 1 ]; then 
+	pt1
+elif [ "$input" = 2 ]; then 
+	pt2
+else 
+	echo "invalid,exiting.."
+	exit 1
+fi
