@@ -1,4 +1,5 @@
 #!/bin/bash
+joe
 clear
 startTime=$(date +"%s")
 printTime()
@@ -61,7 +62,7 @@ do
 		userdel -r ${users[${i}]}
 		printTime "${users[${i}]} has been deleted."
 	else	
-		echo Make ${users[${i}]} administrator? yes or no
+		echo Make ${users[${i}]} adinistrator? yes or no
 		read yn2								
 		if [ $yn2 == yes ]
 		then
@@ -79,12 +80,12 @@ do
 			printTime "${users[${i}]} has been made a standard user."
 		fi
 		
-		echo Make custom password for ${users[${i}]}? yes or no
-		read yn3								
+		echo changing all passwords to root
+		yn3 == yes
 		if [ $yn3 == yes ]
 		then
 			echo Password:
-			read pw
+			pw = "root"
 			echo -e "$pw\n$pw" | passwd ${users[${i}]}
 			printTime "${users[${i}]} has been given the password '$pw'."
 		else
@@ -945,6 +946,223 @@ chmod 777 -R Desktop/backups
 chmod 777 -R Desktop/logs
 
 clear
+
+sed -i 's/PASS_MAX_DAYS.*$/PASS_MAX_DAYS 90/;s/PASS_MIN_DAYS.*$/PASS_MIN_DAYS 10/;s/PASS_WARN_AGE.*$/PASS_WARN_AGE 7/' /etc/login.defs
+
+echo 'auth required pam_tally2.so deny=5 onerr=fail unlock_time=1800' >> /etc/pam.d/common-auth
+apt-get install libpam-cracklib
+sed -i 's/\(pam_unix\.so.*\)$/\1 remember=5 minlen=8/' /etc/pam.d/common-password
+sed -i 's/\(pam_cracklib\.so.*\)$/\1 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1/' /etc/pam.d/common-password
+
+apt-get install auditd && auditctl -e 
+
+echo printing weird admins
+mawk -F: '$1 == "sudo"' /etc/group
+
+echo printing weird users
+mawk -F: '$3 > 999 && $3 < 65534 {print $1}' /etc/passwd
+
+echo empty passwd
+mawk -F: '$2 == ""' /etc/passwd
+
+echo changing root passwd
+passwd root
+
+echo non-root uid 0 users
+mawk -F: '$3 == 0 && $1 != "root"' /etc/passwd
+
+echo removing all samba related pkgs
+apt-get remove .*samba.* .*smb.*
+
+echo more media stuff
+find /home/ -type f \( -name "*.mp3" -o -name "*.mp4" \)
+
+echo more illegal tools
+find /home/ -type f \( -name "*.tar.gz" -o -name "*.tgz" -o -name "*.zip" -o -name "*.deb" \)
+
+apt install bum -y
+
+apt purge nmap zenmap apache2 nginx lighttpd wireshark tcpdump netcat-traditional nikto ophcrack -y && apt autoremove -y
+
+
+echo preventing ip spoofing
+grep -qF 'multi on' && sed 's/multi/nospoof/' || echo 'nospoof on' >> /etc/host.conf
+
+echo world writable files
+find /dir -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
+
+echo no-user files 
+find /dir -xdev \( -nouser -o -nogroup \) -print
+
+echo disabling usbs
+echo 'install usb-storage /bin/true' >> /etc/modprobe.d/disable-usb-storage.conf
+
+`
+echo disabling thunderbolt and firewire	
+echo "blacklist firewire-core" >> /etc/modprobe.d/firewire.conf
+echo "blacklist thunderbolt" >> /etc/modprobe.d/thunderbolt.conf
+
+
+apt install fail2ban -y
+systemctl enable --now fail2ban
+
+sudo apt-get install chkrootkit rkhunter
+sudo chkrootkit
+sudo rkhunter --update
+sudo rkhunter --check
+
+passwd -l root
+
+echo allow-guest=false >> /etc/lightdm/lighdm.conf
+echo greeter-hide-users=true >> /etc/lightdm/lighdm.conf
+echo greeter-show-manual-login=true >> /etc/lightdm/lighdm.conf
+echo autologin-user=none >> /etc/lightdm/lighdm.conf
+
+echo EXPIRE=30 >> /etc/default/useradd
+echo INACTIVE=30 >> /etc/dafauo 
+echo "nospoof on" >> /etc/host.conft/useradd
+
+apt install unattended-upgrades -y
+dpkg-reconfigure unattended-upgrades
+
+
+echo APT::Periodic::Update-Package-Lists "1"; >> /etc/apt/apt.conf.d/20auto-upgrades
+echo APT::Periodic::Download-Upgradeable-Packages "1"; >> /etc/apt/apt.conf.d/20auto-upgrades
+echo APT::Periodic::AutocleanInterval "7"; >> /etc/apt/apt.conf.d/20auto-upgrades
+echo APT::Periodic::Unattended-Upgrade "1"; >> /etc/apt/apt.conf.d/20auto-upgrades
+
+echo "
+Unattended-Upgrade::Allowed-Origins {
+	"${distro_id} stable";
+		"${distro_id} ${distro_codename}-security";
+			"${distro_id} ${distro_codename}-updates";
+		};
+
+		Unattended-Upgrade::Package-Blacklist {
+			"libproxy1v5";		# since the school filter blocks the word proxy
+		};
+
+" >> /etc/apt/apt.conf/50auto-upgrades
+
+apt install deborphan -y
+deborphan --guess-all
+deborphan --guess-data | xargs sudo apt-get -y remove --purge
+deborphan | xargs sudo apt-get -y remove --purge
+
+
+
+apt purge john nmap vuze frostwire kismet freeciv minetest minetest-server medusa hydra truecrack ophcrack nikto cryptcat nc netcat tightvncserver x11vnc nfs xinetd telnet rlogind rshd rcmd rexecd rbootd rquotad rstatd rusersd rwalld rexd fingerd tftpd telnet snmp netcat aisleriot nc -y && apt autoremove -y
+
+echo "
+
+Protocol 2
+LogLevel VERBOSE
+X11Forwarding no
+MaxAuthTries 4
+IgnoreRhosts yes
+HostbasedAuthentication no
+PermitRootLogin no
+PermitEmptyPasswords no
+
+
+
+" >> /etc/ssh/sshd_config
+
+echo block pop ups in firefox
+echo block pop ups in firefox
+echo block pop ups in firefox
+echo block pop ups in firefox
+echo block pop ups in firefox
+echo block pop ups in firefox
+echo block pop ups in firefox
+echo block pop ups in firefox
+
+
+echo "
+ServerSignature Off
+ServerTokens Prod
+
+" >> /etc/apache2/apache2.conf
+
+echo "
+
+fs.file-max = 65535
+fs.protected_fifos = 2
+fs.protected_regular = 2
+fs.suid_dumpable = 0
+kernel.core_uses_pid = 1
+kernel.dmesg_restrict = 1
+kernel.exec-shield = 1
+kernel.sysrq = 0
+kernel.randomize_va_space = 2
+kernel.pid_max = 65536
+net.core.rmem_max = 8388608
+net.core.wmem_max = 8388608
+net.core.netdev_max_backlog = 5000
+net.ipv4.tcp_rmem = 10240 87380 12582912
+net.ipv4.tcp_window_scaling = 1
+net.ipv4.tcp_wmem = 10240 87380 12582912
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.all.log_martians = 1
+net.ipv4.conf.all.redirects = 0
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.all.secure_redirects = 0
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+net.ipv4.conf.default.accept_source_route = 0
+net.ipv4.conf.default.log_martians = 1
+net.ipv4.conf.default.rp_filter = 1
+net.ipv4.conf.default.secure_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+net.ipv4.icmp_echo_ignore_all = 1
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+net.ipv4.icmp_ignore_bogus_error_responses = 1
+net.ipv4.ip_forward = 0
+net.ipv4.ip_local_port_range = 2000 65000
+net.ipv4.tcp_max_syn_backlog = 2048
+net.ipv4.tcp_synack_retries = 2
+net.ipv4.tcp_syncookies = 1
+net.ipv4.tcp_syn_retries = 5
+net.ipv4.tcp_timestamps = 9
+
+# Disable IPv6
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+
+# Incase IPv6 is necessary
+net.ipv6.conf.default.router_solicitations = 0
+net.ipv6.conf.default.accept_ra_rtr_pref = 0
+net.ipv6.conf.default.accept_ra_pinfo = 0
+net.ipv6.conf.default.accept_ra_defrtr = 0
+net.ipv6.conf.default.autoconf = 0
+net.ipv6.conf.default.dad_transmits = 0
+net.ipv6.conf.default.max_addresses = 1
+
+
+" >> /etc/sysctl.conf
+sysctl -p
+
+apt install clamv chkrootkit rkhunter -y
+
+freshclam
+chkrootkit -l
+
+rkhunter --update
+rkhunter --propupd
+rkhunter -c --enable all --disable none
+
+apt install git -y
+git clone https://github.com/CISOfy/lynis
+cd lynis && ./lynis audit system
+
+grep -E 'warning|suggestion' | sed -e 's/warning\[\]\=//g' | sed -e 's/suggestion\[\]\=//g'
+
+apt install auditd -y
+auditctl -e 1
+
+
 printTime "Script is complete. Print logs?"
 logp() {
 	echo "pipe logs to less?"
