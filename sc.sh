@@ -1167,6 +1167,8 @@ sed -i 's/^TimedLogindelay/#&/' /etc/gdm3/custom.conf
 sed -i 's/^AutomaticLoginEnable/#&/' /etc/gdm3/custom.conf
 sed -i 's/^AutomaticLogin/#&/' /etc/gdm3/custom.conf
 
+apt update -y && apt dist-upgrade -y && apt autoremove -y 
+
 printTime "Script is complete. Print logs?"
 logp() {
 	echo "pipe logs to less?"
