@@ -1,5 +1,4 @@
 #!/bin/bash
-joe
 clear
 startTime=$(date +"%s")
 printTime()
@@ -51,6 +50,7 @@ read -a users
 
 usersLength=${#users[@]}	
 
+
 for (( i=0;i<$usersLength;i++))
 do
 	clear
@@ -61,8 +61,9 @@ do
 	then
 		userdel -r ${users[${i}]}
 		printTime "${users[${i}]} has been deleted."
+
 	else	
-		echo Make ${users[${i}]} adinistrator? yes or no
+		echo Make ${users[${i}]} administrator? yes or no
 		read yn2								
 		if [ $yn2 == yes ]
 		then
@@ -80,12 +81,12 @@ do
 			printTime "${users[${i}]} has been made a standard user."
 		fi
 		
-		echo changing all passwords to root
-		yn3 == yes
+		echo Make custom password for ${users[${i}]}? yes or no
+		read yn3								
 		if [ $yn3 == yes ]
 		then
 			echo Password:
-			pw = "root"
+			read pw
 			echo -e "$pw\n$pw" | passwd ${users[${i}]}
 			printTime "${users[${i}]} has been given the password '$pw'."
 		else
@@ -1155,13 +1156,16 @@ rkhunter -c --enable all --disable none
 
 apt install git -y
 git clone https://github.com/CISOfy/lynis
-cd lynis && ./lynis audit system
-
-grep -E 'warning|suggestion' | sed -e 's/warning\[\]\=//g' | sed -e 's/suggestion\[\]\=//g'
+cd lynis && ./lynis audit system | grep -E 'warning|suggestion' | sed -e 's/warning\[\]\=//g' | sed -e 's/suggestion\[\]\=//g'
 
 apt install auditd -y
 auditctl -e 1
 
+sed -i 's/^TimedLoginEnable/#&/' /etc/gdm3/custom.conf
+sed -i 's/^TimedLogin/#&/' /etc/gdm3/custom.conf
+sed -i 's/^TimedLogindelay/#&/' /etc/gdm3/custom.conf
+sed -i 's/^AutomaticLoginEnable/#&/' /etc/gdm3/custom.conf
+sed -i 's/^AutomaticLogin/#&/' /etc/gdm3/custom.conf
 
 printTime "Script is complete. Print logs?"
 logp() {
