@@ -986,8 +986,8 @@ apt install bum -y
 apt purge nmap zenmap apache2 nginx lighttpd wireshark tcpdump netcat-traditional nikto ophcrack -y && apt autoremove -y
 
 
-echo preventing ip spoofing
-grep -qF 'multi on' && sed 's/multi/nospoof/' || echo 'nospoof on' >> /etc/host.conf
+#echo preventing ip spoofing
+#grep -qF 'multi on' && sed 's/multi/nospoof/' || echo 'nospoof on' >> /etc/host.conf
 
 echo world writable files
 find /dir -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
