@@ -996,9 +996,7 @@ find / -xdev \( -nouser -o -nogroup \) -print
 
 echo disabling usbs
 echo 'install usb-storage /bin/true' >> /etc/modprobe.d/disable-usb-storage.conf
-
-`
-echo disabling thunderbolt and firewire	
+echo "disabling thunderbolt and firewire"
 echo "blacklist firewire-core" >> /etc/modprobe.d/firewire.conf
 echo "blacklist thunderbolt" >> /etc/modprobe.d/thunderbolt.conf
 
