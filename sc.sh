@@ -443,7 +443,13 @@ else
 fi
 printTime "MySQL is complete."
 
+apt-get install libpam-cracklib -y
 
+echo "
+EXPIRE=30
+INACTIVE=30
+
+" >> /etc/default/useradd
 
 clear
 if [ $httpYN == no ]
