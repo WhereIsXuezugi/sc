@@ -990,10 +990,10 @@ apt purge nmap zenmap apache2 nginx lighttpd wireshark tcpdump netcat-traditiona
 #grep -qF 'multi on' && sed 's/multi/nospoof/' || echo 'nospoof on' >> /etc/host.conf
 
 echo world writable files
-find /dir -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
+find / -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
 
 echo no-user files 
-find /dir -xdev \( -nouser -o -nogroup \) -print
+find / -xdev \( -nouser -o -nogroup \) -print
 
 echo disabling usbs
 echo 'install usb-storage /bin/true' >> /etc/modprobe.d/disable-usb-storage.conf
