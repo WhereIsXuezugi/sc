@@ -1166,6 +1166,9 @@ sed -i 's/^AutomaticLogin/#&/' /etc/gdm3/custom.conf
 
 apt update -y && apt dist-upgrade -y && apt autoremove -y 
 
+echo preventing ip spoofing
+grep -qF 'multi on' && sed 's/multi/nospoof/' || echo 'nospoof on' >> /etc/host.conf
+
 printTime "Script is complete. Print logs?"
 logp() {
 	echo "pipe logs to less?"
@@ -1185,7 +1188,5 @@ logp() {
             }
 until logp ; do : ; done
 
-echo preventing ip spoofing
-grep -qF 'multi on' && sed 's/multi/nospoof/' || echo 'nospoof on' >> /etc/host.conf
 
 
