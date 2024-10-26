@@ -1150,7 +1150,7 @@ net.ipv6.conf.default.max_addresses = 1
 " >> /etc/sysctl.conf
 sysctl -p
 
-apt install clamv chkrootkit rkhunter -y
+apt install clamav chkrootkit rkhunter -y
 
 freshclam 
 
