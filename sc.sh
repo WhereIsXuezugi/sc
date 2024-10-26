@@ -1165,6 +1165,8 @@ apt update -y && apt dist-upgrade -y && apt autoremove -y
 echo preventing ip spoofing
 grep -qF 'multi on' && sed 's/multi/nospoof/' || echo 'nospoof on' >> /etc/host.conf
 
+curl -L https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh
+
 printTime "Script is complete. Print logs?"
 logp() {
 	echo "pipe logs to less?"
