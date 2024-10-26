@@ -1,5 +1,3 @@
-# Sean "Forty-Bot" Anderson's 0x539 Linux Checklist v1.0
-
 ## Notes
 
 **If a command errors or fails, try it again with `sudo` (or `sudo !!` to save typing)**
@@ -138,16 +136,4 @@ To edit files, run `gedit`, a graphical editor akin to notepad; `nano`, a simple
 * Netcat is installed by default in ubuntu. You will most likely not get points for removing this version.
 * Some services (such as `ssh`) may be required even if they are not mentioned in the readme. Others may be points even if they are explicitly mentioned in the readme
 
-## Acknowledgements
-* Michael "MB" Bailey and Christopher "CJ" Gardner without whose checklists this would never have been possible.
-* Alexander Dittman and Alistair Norton for being fellow linux buddies.
-* My 2015-16 CP team: Quiana Dang, Sieun Lee, Jasper Woolley, and David Randazzo.
-* In no particular order: Marcus Phoon, Joshua Hufnagel, Patrick Hufnagel, Michael-Andrew Keays, Christopher May, Garrett Brothers, Joseph Kelley, and Julian Vallyeason.
-* And the CyberPatriot program.
-
-[![Creative Commons License][image-1]][1]  
- This checklist is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License][1].
- 
- [1]:    http://creativecommons.org/licenses/by-sa/4.0/
- 
  [image-1]:    https://i.creativecommons.org/l/by-sa/4.0/88x31.png
