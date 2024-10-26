@@ -1005,9 +1005,10 @@ apt install fail2ban -y
 systemctl enable --now fail2ban
 
 sudo apt-get install chkrootkit rkhunter
-sudo chkrootkit
+sudo chkrootkit -l
 sudo rkhunter --update
 sudo rkhunter --check
+rkhunter -c --enable all --disable none
 
 passwd -l root
 
@@ -1144,12 +1145,7 @@ sysctl -p
 
 apt install clamv chkrootkit rkhunter -y
 
-freshclam
-chkrootkit -l
-
-rkhunter --update
-rkhunter --propupd
-rkhunter -c --enable all --disable none
+freshclam 
 
 apt install git -y
 git clone https://github.com/CISOfy/lynis
