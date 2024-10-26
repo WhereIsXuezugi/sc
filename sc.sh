@@ -976,18 +976,17 @@ echo removing all samba related pkgs
 apt-get remove .*samba.* .*smb.*
 
 echo more media stuff
-find /home/ -type f \( -name "*.mp3" -o -name "*.mp4" \)
+find / -type f \( -name "*.mp3" -o -name "*.mp4" \)
 
 echo more illegal tools
-find /home/ -type f \( -name "*.tar.gz" -o -name "*.tgz" -o -name "*.zip" -o -name "*.deb" \)
+find /home -type f \( -name "*.tar.gz" -o -name "*.tgz" -o -name "*.zip" -o -name "*.deb" \)
 
 apt install bum -y
 
 apt purge nmap zenmap apache2 nginx lighttpd wireshark tcpdump netcat-traditional nikto ophcrack -y && apt autoremove -y
 
 
-#echo preventing ip spoofing
-#grep -qF 'multi on' && sed 's/multi/nospoof/' || echo 'nospoof on' >> /etc/host.conf
+
 
 echo world writable files
 find / -xdev -type d \( -perm -0002 -a ! -perm -1000 \) -print
@@ -1187,3 +1186,8 @@ logp() {
             esac
             }
 until logp ; do : ; done
+
+echo preventing ip spoofing
+grep -qF 'multi on' && sed 's/multi/nospoof/' || echo 'nospoof on' >> /etc/host.conf
+
+
