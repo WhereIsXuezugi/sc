@@ -1,0 +1,1 @@
+awk -F ':' '$3>=1000 {print "Valid user :"$1","$3}' /etc/passwd | grep -Ev 'jaimie|debian'
