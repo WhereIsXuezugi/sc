@@ -1209,6 +1209,7 @@ curl -L https://github.com/peass-ng/PEASS-ng/releases/latest/download/linpeas.sh
 echo 0 | sudo tee /proc/sys/net/ipv4/ip_forward
 
 apt-get remove .*samba.* .*smb.* -y
+apt install pamtester
 
 printTime "Script is complete. Print logs?"
 logp() {
