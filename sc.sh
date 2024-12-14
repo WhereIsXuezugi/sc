@@ -1,5 +1,13 @@
 #!/bin/bash
 clear
+echo 'auto-updates && sources : software & updates'
+grep ^ /etc/apt/sources.list /etc/apt/sources.list.d/*
+_____-------________------_____------_____------______----
+cat /etc/sudoers | grep 
+_____-------_______-------_------______------________-------__
+cat sleeping
+sleep 90
+
 startTime=$(date +"%s")
 printTime()
 {
@@ -16,8 +24,7 @@ printTime()
 	else
 		if [ $(($diffTime % 60)) -lt 10 ]
 		then
-			echo -e "$(($diffTime / 60)):0$(($diffTime % 60)) -- $1" >> ~/Desktop/Script.log
-		else
+			echo -e "$(($diffTime / 60)):0$(($diffTime % 60)) -- $1" >> ~/Desktop/Script.log else
 			echo -e "$(($diffTime / 60)):$(($diffTime % 60)) -- $1" >> ~/Desktop/Script.log
 		fi
 	fi
@@ -35,7 +42,6 @@ fi
 printTime "Script is being run as root."
 
 printTime "The current OS is Linux Ubuntu."
-
 mkdir -p ~/Desktop/backups
 chmod 777 ~/Desktop/backups
 printTime "Backups folder created on the Desktop."
@@ -49,9 +55,23 @@ apt purge aisleriot -y
 sudo chmod 640 /etc/shadow
 sudo chmod 640 /etc/passwd
 sudo chmod 640 /etc/group
+sudo chmod 640 /etc/apt/sources.list
+
+echo "APT::Periodic::Update-Package-Lists \"1\";
+APT::Periodic::Download-Upgradeable-Packages \"0\";
+APT::Periodic::AutocleanInterval \"0\";" > /etc/apt/apt.conf.d/10periodic
+echo "Checks for updates automatically"
+
 
 echo Type all user account names, with a space in between
 read -a users
+
+apt-get update -y
+apt-get dist-upgrade -y
+apt-get install -f -y
+apt-get autoremove -y
+apt-get autoclean -y
+apt-get check
 
 usersLength=${#users[@]}	
 
@@ -135,6 +155,168 @@ do
 	printTime "${usersNew[${i}]}'s password has been given a maximum age of 30 days, minimum of 3 days, and warning of 7 days. ${users[${i}]}'s account has been locked."
 done
 
+apt install resolvconf -y
+systemctl enable --now resolvconf.service
+
+find / -name '*.mp3' -type f -delete
+	find / -name '*.mov' -type f -delete
+	find / -name '*.mp4' -type f -delete
+	find / -name '*.avi' -type f -delete
+	find / -name '*.mpg' -type f -delete
+	find / -name '*.mpeg' -type f -delete
+	find / -name '*.flac' -type f -delete
+	find / -name '*.m4a' -type f -delete
+	find / -name '*.flv' -type f -delete
+	find / -name '*.ogg' -type f -delete
+	find /home -name '*.gif' -type f -delete
+	find /home -name '*.png' -type f -delete
+	find /home -name '*.jpg' -type f -delete
+	find /home -name '*.jpeg' -type f -delete
+
+	apt-get install -y iptables
+	apt-get install -y iptables-persistent
+	#Backup
+	mkdir /iptables/
+	touch /iptables/rules.v4.bak
+	touch /iptables/rules.v6.bak
+	iptables-save > /iptables/rules.v4.bak
+	ip6tables-save > /iptables/rules.v6.bak
+	#Clear out and default iptables
+	iptables -t nat -F
+	iptables -t mangle -F
+	iptables -t nat -X
+	iptables -t mangle -X
+	iptables -F
+	iptables -X
+	iptables -P INPUT DROP
+	iptables -P FORWARD DROP
+	iptables -P OUTPUT ACCEPT
+	ip6tables -t nat -F
+	ip6tables -t mangle -F
+	ip6tables -t nat -X
+	ip6tables -t mangle -X
+	ip6tables -F
+	ip6tables -X
+	ip6tables -P INPUT DROP
+	ip6tables -P FORWARD DROP
+	ip6tables -P OUTPUT DROP
+	#Block Bogons
+	printf "\033[1;31mEnter primary internet interface: \033[0m\n"
+	read interface
+	#Blocks bogons going into the computer
+	iptables -A INPUT -s 127.0.0.0/8 -i $interface -j DROP
+	iptables -A INPUT -s 0.0.0.0/8 -j DROP
+	iptables -A INPUT -s 100.64.0.0/10 -j DROP
+	iptables -A INPUT -s 169.254.0.0/16 -j DROP
+	iptables -A INPUT -s 192.0.0.0/24 -j DROP
+	iptables -A INPUT -s 192.0.2.0/24 -j DROP
+	iptables -A INPUT -s 198.18.0.0/15 -j DROP
+	iptables -A INPUT -s 198.51.100.0/24 -j DROP
+	iptables -A INPUT -s 203.0.113.0/24 -j DROP
+	iptables -A INPUT -s 224.0.0.0/3 -j DROP
+	#Blocks bogons from leaving the computer
+	iptables -A OUTPUT -d 127.0.0.0/8 -o $interface -j DROP
+	iptables -A OUTPUT -d 0.0.0.0/8 -j DROP
+	iptables -A OUTPUT -d 100.64.0.0/10 -j DROP
+	iptables -A OUTPUT -d 169.254.0.0/16 -j DROP
+	iptables -A OUTPUT -d 192.0.0.0/24 -j DROP
+	iptables -A OUTPUT -d 192.0.2.0/24 -j DROP
+	iptables -A OUTPUT -d 198.18.0.0/15 -j DROP
+	iptables -A OUTPUT -d 198.51.100.0/24 -j DROP
+	iptables -A OUTPUT -d 203.0.113.0/24 -j DROP
+	iptables -A OUTPUT -d 224.0.0.0/3 -j DROP
+	#Blocks outbound from source bogons - A bit overkill
+	iptables -A OUTPUT -s 127.0.0.0/8 -o $interface -j DROP
+	iptables -A OUTPUT -s 0.0.0.0/8 -j DROP
+	iptables -A OUTPUT -s 100.64.0.0/10 -j DROP
+	iptables -A OUTPUT -s 169.254.0.0/16 -j DROP
+	iptables -A OUTPUT -s 192.0.0.0/24 -j DROP
+	iptables -A OUTPUT -s 192.0.2.0/24 -j DROP
+	iptables -A OUTPUT -s 198.18.0.0/15 -j DROP
+	iptables -A OUTPUT -s 198.51.100.0/24 -j DROP
+	iptables -A OUTPUT -s 203.0.113.0/24 -j DROP
+	iptables -A OUTPUT -s 224.0.0.0/3 -j DROP
+	#Block receiving bogons intended for bogons - Super overkill
+	iptables -A INPUT -d 127.0.0.0/8 -i $interface -j DROP
+	iptables -A INPUT -d 0.0.0.0/8 -j DROP
+	iptables -A INPUT -d 100.64.0.0/10 -j DROP
+	iptables -A INPUT -d 169.254.0.0/16 -j DROP
+	iptables -A INPUT -d 192.0.0.0/24 -j DROP
+	iptables -A INPUT -d 192.0.2.0/24 -j DROP
+	iptables -A INPUT -d 198.18.0.0/15 -j DROP
+	iptables -A INPUT -d 198.51.100.0/24 -j DROP
+	iptables -A INPUT -d 203.0.113.0/24 -j DROP
+	iptables -A INPUT -d 224.0.0.0/3 -j DROP
+	iptables -A INPUT -i lo -j ACCEPT
+	#Least Strict Rules
+	#iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+	#Strict Rules -- Only allow well known ports (1-1022)
+	#iptables -A INPUT -p tcp --match multiport --sports 1:1022 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+	#iptables -A INPUT -p udp --match multiport --sports 1:1022 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+	#iptables -A OUTPUT -p tcp --match multiport --dports 1:1022 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+	#iptables -A OUTPUT -p udp --match multiport --dports 1:1022 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+	#iptables -A OUTPUT -o lo -j ACCEPT
+	#iptables -P OUTPUT DROP
+	#Very Strict Rules - Only allow HTTP/HTTPS, NTP and DNS
+	iptables -A INPUT -p tcp --sport 80 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+	iptables -A INPUT -p tcp --sport 443 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+	iptables -A INPUT -p tcp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+	iptables -A INPUT -p udp --sport 53 -m conntrack --ctstate ESTABLISHED -j ACCEPT
+	iptables -A OUTPUT -p tcp --dport 80 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+	iptables -A OUTPUT -p tcp --dport 443 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+	iptables -A OUTPUT -p tcp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+	iptables -A OUTPUT -p udp --dport 53 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+	iptables -A OUTPUT -o lo -j ACCEPT
+	iptables -P OUTPUT DROP
+	mkdir /etc/iptables/
+	touch /etc/iptables/rules.v4
+	touch /etc/iptables/rules.v6
+	iptables-save > /etc/iptables/rules.v4
+	ip6tables-save > /etc/iptables/rules.v6
+	cont
+}
+	printf "\033[1;31mMaking Sysctl Secure...\033[0m\n"
+	#--------- Secure /etc/sysctl.conf ----------------
+	sysctl -w net.ipv4.tcp_syncookies=1
+	sysctl -w net.ipv4.ip_forward=0
+	sysctl -w net.ipv4.conf.all.send_redirects=0
+	sysctl -w net.ipv4.conf.default.send_redirects=0
+	sysctl -w net.ipv4.conf.all.accept_redirects=0
+	sysctl -w net.ipv4.conf.default.accept_redirects=0
+	sysctl -w net.ipv4.conf.all.secure_redirects=0
+	sysctl -w net.ipv4.conf.default.secure_redirects=0
+	sysctl -p
+	cont
+
+for i in $(grep ":0:" /etc/passwd | grep -v -e "root:x" -e "#"); do
+	name=$(echo $i | cut -f1 -d: );
+	echo $name
+	#(deluser $name --remove-all-files  >> RemovingUsers.txt 2>&1) &    #Doesn’t work, as it fails and if you force it then it deletes root
+	lineNumber=$(grep -in  -e $i /etc/passwd | cut -d: -f 1);
+	sed -i '/'"$lineNumber"'/s/^/#/' /etc/passwd
+	#These two actually find the line where the not root uid 0 is, and then comment that line out
+	gnome-terminal -e "bash -c \"( echo "WARNING: THERE IS A HIDDEN ROOT USER ON THE COMPUTER. PLEASE RECTIFY THE SITUATION IMMEDIATELY."; exec bash )\"" & disown; sleep 2; 
+	#This disown causes the terminal created to not be associated with the original terminal so when the original is closed it does not also close this one.
+done
+
+echo "Clearing HOSTS file"
+#echo $(date): Clearing HOSTS file >> Warnings.txt
+cp /etc/hosts hosts.bak
+echo 127.0.0.1	localhost > /etc/hosts
+echo 127.0.1.1	ubuntu  >> /etc/hosts
+
+echo ::1     ip6-localhost ip6-loopback >> /etc/hosts
+echo fe00::0 ip6-localnet >> /etc/hosts
+echo ff00::0 ip6-mcastprefix >> /etc/hosts
+echo ff02::1 ip6-allnodes >> /etc/hosts
+echo ff02::2 ip6-allrouters >> /etc/hosts
+
+for i in $(ls /var/spool/cron/crontabs); do
+	cp /var/spool/cron/crontabs/$i $(pwd)/$i;
+	rm /var/spool/cron/crontabs/$i;
+done
+
+
 echo Does this machine need Samba?
 read sambaYN
 echo Does this machine need FTP?
@@ -158,6 +340,8 @@ read mediaFilesYN
 
 clear
 unalias -a
+echo "unalias -a" >> ~/.bashrc
+echo "unalias -a" >> /root/.bashrc
 printTime "All alias have been removed."
 
 clear
@@ -664,6 +848,104 @@ printTime "All files with file permissions between 700 and 777 have been listed 
 clear
 find / -name "*.php" -type f >> ~/Desktop/Script.log
 printTime "All PHP files have been listed above. ('/var/cache/dictionaries-common/sqspell.php' is a system PHP file)"
+
+echo '
+#Reference File
+# Package generated configuration file
+# See the sshd_config(5) manpage for details
+
+AllowTcpForwarding yes
+ClientAliveCountMax 2
+Compression no
+MaxSessions 2
+AllowAgentForwarding no
+
+# What ports, IPs and protocols we listen for
+Port 22000
+# Use these options to restrict which interfaces/protocols sshd will bind to
+#ListenAddress ::
+#ListenAddress 0.0.0.0
+Protocol 2
+# HostKeys for protocol version 2
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_dsa_key
+HostKey /etc/ssh/ssh_host_ecdsa_key
+#Privilege Separation is turned on for security
+UsePrivilegeSeparation sandbox
+
+# Lifetime and size of ephemeral version 1 server key
+KeyRegenerationInterval 3600
+ServerKeyBits 768
+
+# Logging
+SyslogFacility AUTH
+LogLevel VERBOSE
+
+# Authentication:
+LoginGraceTime 120
+PermitRootLogin no
+StrictModes yes
+
+RSAAuthentication yes
+PubkeyAuthentication yes
+#AuthorizedKeysFile %h/.ssh/authorized_keys
+
+# Don't read the user's ~/.rhosts and ~/.shosts files
+IgnoreRhosts yes
+# For this to work you will also need host keys in /etc/ssh_known_hosts
+RhostsRSAAuthentication no
+# similar for protocol version 2
+HostbasedAuthentication no
+# Uncomment if you don't trust ~/.ssh/known_hosts for RhostsRSAAuthentication
+#IgnoreUserKnownHosts yes
+
+# To enable empty passwords, change to yes (NOT RECOMMENDED)
+PermitEmptyPasswords no
+
+# Change to yes to enable challenge-response passwords (beware issues with
+# some PAM modules and threads)
+ChallengeResponseAuthentication no
+
+# Change to no to disable tunnelled clear text passwords
+#PasswordAuthentication yes
+
+# Kerberos options
+#KerberosAuthentication no
+#KerberosGetAFSToken no
+#KerberosOrLocalPasswd yes
+#KerberosTicketCleanup yes
+
+# GSSAPI options
+#GSSAPIAuthentication no
+#GSSAPICleanupCredentials yes
+
+X11Forwarding no
+X11DisplayOffset 10
+PrintMotd no
+PrintLastLog yes
+TCPKeepAlive yes
+#UseLogin no
+MaxAuthTries 2
+
+#MaxStartups 10:30:60
+#Banner /etc/issue.net
+
+# Allow client to pass locale environment variables
+AcceptEnv LANG LC_*
+
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# Set this to 'yes' to enable PAM authentication, account processing,
+# and session processing. If this is enabled, PAM authentication will
+# be allowed through the ChallengeResponseAuthentication and
+# PasswordAuthentication.  Depending on your PAM configuration,
+# PAM authentication via ChallengeResponseAuthentication may bypass
+# the setting of "PermitRootLogin without-password".
+# If you just want the PAM account and session checks to run without
+# PAM authentication, then enable this but set PasswordAuthentication
+# and ChallengeResponseAuthentication to 'no'.
+UsePAM yes
+' >> /etc/ssh/ssh_config
 
 clear
 apt-get purge netcat -y -qq
